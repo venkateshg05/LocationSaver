@@ -15,3 +15,8 @@ buildscript {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+ext {
+    lifecycleVersion = '2.4.0'
+    roomVersion = '2.4.0-alpha05'
+}

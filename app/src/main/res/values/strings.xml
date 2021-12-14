@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Location Saver</string>
-    <string name="save_my_location">Save my location</string>
     <string name="show_saved_locations">Show saved locations</string>
+    <string name="save_my_location">Save my location</string>
 </resources>
