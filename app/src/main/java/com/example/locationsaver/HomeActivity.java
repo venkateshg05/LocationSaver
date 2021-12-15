@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -34,6 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentLocation;
 
+    private final String mapsURIBase = "http://maps.google.com/maps?q=loc:";
     private String locationName;
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
     ActivityResultLauncher<Intent> arlGetLocationName = registerForActivityResult(
@@ -87,6 +89,19 @@ public class HomeActivity extends AppCompatActivity {
         savedLocationsViewModel = new ViewModelProvider(this).get(SavedLocationsViewModel.class);
 
         SavedLocationsOnClickListener onClickListener = (view, position) -> {
+            SavedLocations selectedLocation = savedLocationsViewModel.savedLocations.getValue().get(position);
+            String lat_long = selectedLocation.latitude + "," + selectedLocation.longitude +
+                    "(" + selectedLocation.locationName + ")";
+
+            Intent mapIntent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(mapsURIBase + lat_long)
+                    );
+            mapIntent.setPackage("com.google.android.apps.maps");
+
+            if (mapIntent.resolveActivity(getPackageManager()) != null) {
+              startActivity(mapIntent);
+            }
             Toast.makeText(
                     getApplicationContext(), "Clicked " + position, Toast.LENGTH_SHORT
             ).show();

@@ -13,7 +13,7 @@ import java.util.List;
 public class SavedLocationsViewModel extends AndroidViewModel {
 
     private SavedLocationsRepository savedLocationsRepository;
-    private final LiveData<List<SavedLocations>> savedLocations;
+    public final LiveData<List<SavedLocations>> savedLocations;
 
     public SavedLocationsViewModel(@NonNull Application application) {
         super(application);
@@ -27,6 +27,11 @@ public class SavedLocationsViewModel extends AndroidViewModel {
 
     public void addNewSavedLocation(SavedLocations location) {
         savedLocationsRepository.addNewSavedLocation(location);
+    }
+
+    public SavedLocations getSelectedLocation(int id) {
+        savedLocationsRepository.getSelectedLocation(id);
+        return null;
     }
 
 }
