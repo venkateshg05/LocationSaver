@@ -30,4 +30,8 @@ class SavedLocationsRepository {
         );
     }
 
+    SavedLocations getSelectedLocation(int id) {
+        return null;
+    }
+
 }
