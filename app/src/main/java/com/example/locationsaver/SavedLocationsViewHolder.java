@@ -10,16 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class SavedLocationsViewHolder extends RecyclerView.ViewHolder {
 
-    private final TextView id;
     private final TextView latLong;
     public SavedLocationsViewHolder(@NonNull View itemView) {
         super(itemView);
-        id = itemView.findViewById(R.id.tvID);
-        latLong = itemView.findViewById(R.id.tvLatLong);
+        latLong = itemView.findViewById(R.id.tvLocationName);
     }
 
-    public void bind(String id, String location) {
-        this.id.setText(id);
+    public void bind(String location) {
         this.latLong.setText(location);
     }
 
