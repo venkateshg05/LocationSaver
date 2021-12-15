@@ -84,13 +84,23 @@ public class HomeActivity extends AppCompatActivity {
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        savedLocationsViewModel = new ViewModelProvider(this).get(SavedLocationsViewModel.class);
+
+        SavedLocationsOnClickListener onClickListener = (view, position) -> {
+            Toast.makeText(
+                    getApplicationContext(), "Clicked " + position, Toast.LENGTH_SHORT
+            ).show();
+        };
+        SavedLocationsAdapter savedLocationsAdapter =
+                new SavedLocationsAdapter(
+                        new SavedLocationsAdapter.SavedLocationDiff(),
+                        onClickListener
+                );
+
         RecyclerView rvSavedLocations = findViewById(R.id.rvSavedLocations);
-        final SavedLocationsAdapter savedLocationsAdapter =
-                new SavedLocationsAdapter(new SavedLocationsAdapter.SavedLocationDiff());
         rvSavedLocations.setAdapter(savedLocationsAdapter);
         rvSavedLocations.setLayoutManager(new LinearLayoutManager(this));
 
-        savedLocationsViewModel = new ViewModelProvider(this).get(SavedLocationsViewModel.class);
         savedLocationsViewModel.getAllSavedLocations().observe(this, locations -> {
             savedLocationsAdapter.submitList(locations);
         });
@@ -104,7 +114,6 @@ public class HomeActivity extends AppCompatActivity {
                 ) == PackageManager.PERMISSION_GRANTED
         ) {
             CancellationTokenSource cts = new CancellationTokenSource();
-            //TODO get the location & save it
             fusedLocationProviderClient.getCurrentLocation(
                     LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, cts.getToken()
             ).addOnSuccessListener(this, location -> {

@@ -1,5 +1,6 @@
 package com.example.locationsaver;
 
+import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -9,14 +10,19 @@ import androidx.recyclerview.widget.ListAdapter;
 
 public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLocationsViewHolder> {
 
-    protected SavedLocationsAdapter(@NonNull DiffUtil.ItemCallback<SavedLocations> diffCallback) {
+    SavedLocationsOnClickListener onClickListener;
+    protected SavedLocationsAdapter(
+            @NonNull DiffUtil.ItemCallback<SavedLocations> diffCallback,
+            SavedLocationsOnClickListener onClickListener
+    ) {
         super(diffCallback);
+        this.onClickListener = onClickListener;
     }
 
     @NonNull
     @Override
     public SavedLocationsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return SavedLocationsViewHolder.create(parent);
+        return SavedLocationsViewHolder.create(parent, this.onClickListener);
     }
 
     @Override
