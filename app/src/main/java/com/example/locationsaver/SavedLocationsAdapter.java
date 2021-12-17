@@ -11,18 +11,21 @@ import androidx.recyclerview.widget.ListAdapter;
 public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLocationsViewHolder> {
 
     SavedLocationsOnClickListener onClickListener;
+    SavedLocationsViewModel savedLocationsViewModel;
     protected SavedLocationsAdapter(
             @NonNull DiffUtil.ItemCallback<SavedLocations> diffCallback,
-            SavedLocationsOnClickListener onClickListener
+            SavedLocationsOnClickListener onClickListener,
+            SavedLocationsViewModel savedLocationsViewModel
     ) {
         super(diffCallback);
         this.onClickListener = onClickListener;
+        this.savedLocationsViewModel = savedLocationsViewModel;
     }
 
     @NonNull
     @Override
     public SavedLocationsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return SavedLocationsViewHolder.create(parent, this.onClickListener);
+        return SavedLocationsViewHolder.create(parent, this.onClickListener, this.savedLocationsViewModel);
     }
 
     @Override

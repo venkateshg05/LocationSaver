@@ -8,6 +8,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -82,7 +83,8 @@ public class HomeActivity extends AppCompatActivity {
         SavedLocationsAdapter savedLocationsAdapter =
                 new SavedLocationsAdapter(
                         new SavedLocationsAdapter.SavedLocationDiff(),
-                        onClickListener
+                        onClickListener,
+                        savedLocationsViewModel
                 );
 
         setupHomePage(savedLocationsAdapter);
@@ -121,9 +123,6 @@ public class HomeActivity extends AppCompatActivity {
             if (mapIntent.resolveActivity(getPackageManager()) != null) {
               startActivity(mapIntent);
             }
-            Toast.makeText(
-                    getApplicationContext(), "Clicked " +  selectedLocation.locationName, Toast.LENGTH_SHORT
-            ).show();
     }
 
     private void getLocationDetailsAndSave() {

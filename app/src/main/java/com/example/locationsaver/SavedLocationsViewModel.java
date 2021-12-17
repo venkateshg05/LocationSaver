@@ -29,9 +29,8 @@ public class SavedLocationsViewModel extends AndroidViewModel {
         savedLocationsRepository.addNewSavedLocation(location);
     }
 
-    public SavedLocations getSelectedLocation(int id) {
-        savedLocationsRepository.getSelectedLocation(id);
-        return null;
+    public void deleteSelectedLocation(SavedLocations location) {
+        savedLocationsRepository.deleteSelectedLocation(location);
     }
 
 }
