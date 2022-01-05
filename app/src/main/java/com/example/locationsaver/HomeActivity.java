@@ -4,29 +4,24 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.CancellationTokenSource;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class HomeActivity extends AppCompatActivity {
@@ -39,12 +34,47 @@ public class HomeActivity extends AppCompatActivity {
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
     private final String LOCATION_LATITUDE_KEY = "LOCATION_LATITUDE_KEY";
     private final String LOCATION_LONGITUDE_KEY = "LOCATION_LONGITUDE_KEY";
-    ActivityResultLauncher<Intent> arlGetLocationName = registerForActivityResult(
+
+    ActivityResultLauncher<Intent> arlGetLocationDetail = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            result -> processResult(result)
+            result -> addNewLocation(result)
     );
 
-    private void processResult(ActivityResult result) {
+    private final String SELECTION_POSITION = "LOCATION_ID_KEY";
+    ActivityResultLauncher<Intent> arlEditLocationDetail = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> editLocation(result)
+    );
+
+    private void editLocation(ActivityResult result) {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent locationDetails = result.getData();
+            String locationName = locationDetails.getStringExtra(LOCATION_NAME_KEY);
+            int position = locationDetails.getIntExtra(SELECTION_POSITION, -1);
+            SavedLocations selectedLocation = savedLocationsViewModel.savedLocations.getValue().get(position);
+            SavedLocations updateLocation = new SavedLocations(
+                    selectedLocation.latitude,
+                    selectedLocation.longitude,
+                    locationName
+                    );
+            updateLocation.id = selectedLocation.id;
+            savedLocationsViewModel.updateLocation(updateLocation);
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Changes saved",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+        else if (result.getResultCode() == Activity.RESULT_CANCELED) {
+            Toast.makeText(
+                    HomeActivity.this,
+                    "Cancelled",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
+
+    private void addNewLocation(ActivityResult result) {
 
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent locationDetails = result.getData();
@@ -84,7 +114,8 @@ public class HomeActivity extends AppCompatActivity {
                 new SavedLocationsAdapter(
                         new SavedLocationsAdapter.SavedLocationDiff(),
                         onClickListener,
-                        savedLocationsViewModel
+                        savedLocationsViewModel,
+                        arlEditLocationDetail
                 );
 
         setupHomePage(savedLocationsAdapter);
@@ -107,6 +138,25 @@ public class HomeActivity extends AppCompatActivity {
         RecyclerView rvSavedLocations = findViewById(R.id.rvSavedLocations);
         rvSavedLocations.setAdapter(savedLocationsAdapter);
         rvSavedLocations.setLayoutManager(new LinearLayoutManager(this));
+
+        new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                @Override
+                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                    return false;
+                }
+
+                @Override
+                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                    SavedLocations locationToDelete = savedLocationsViewModel
+                                                        .getAllSavedLocations()
+                                                        .getValue()
+                                                        .get(viewHolder.getAdapterPosition());
+                    savedLocationsViewModel.deleteSelectedLocation(locationToDelete);
+                    Toast.makeText(getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                }
+            }
+        ).attachToRecyclerView(rvSavedLocations);
     }
 
     private void setupOnClickListener(View view, int position) {
@@ -126,13 +176,13 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void getLocationDetailsAndSave() {
-        Intent intentGetLocationDetails = new Intent(HomeActivity.this, GetLocationDetails.class);
+        Intent intentGetLocationDetails = new Intent(HomeActivity.this, GetLocationDetailsActivity.class);
         if (
                 ContextCompat.checkSelfPermission(
                 this, Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
         ) {
-            arlGetLocationName.launch(intentGetLocationDetails);
+            arlGetLocationDetail.launch(intentGetLocationDetails);
         } else {
             Toast.makeText(
                     getApplicationContext(),

@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,7 +22,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.CancellationTokenSource;
 
-public class GetLocationDetails extends AppCompatActivity {
+public class GetLocationDetailsActivity extends AppCompatActivity {
     private Button btSaveDetails;
     private EditText etLocationName;
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
@@ -38,16 +40,32 @@ public class GetLocationDetails extends AppCompatActivity {
         setContentView(R.layout.get_location_details);
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        btSaveDetails = findViewById(R.id.btSaveLocationDetails);
+        btSaveDetails.setEnabled(false);
+
         etLocationName = findViewById(R.id.etLocationName);
+        etLocationName.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                btSaveDetails.setEnabled(!TextUtils.isEmpty(etLocationName.getText()));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
         checkPermissionAndGetLocation();
 
-        btSaveDetails = findViewById(R.id.btSaveLocationDetails);
-        boolean enable = !TextUtils.isEmpty(etLocationName.getText());
-        btSaveDetails.setEnabled(enable);
         btSaveDetails.setOnClickListener(
                 view -> {
                     Intent resultIntent = new Intent();
-                    resultIntent.putExtra(LOCATION_NAME_KEY, etLocationName.getText().toString());
+                    resultIntent.putExtra(LOCATION_NAME_KEY, etLocationName.getText().toString().trim());
                         resultIntent.putExtra(LOCATION_LATITUDE_KEY, String.valueOf(currentLocation.getLatitude()));
                         resultIntent.putExtra(LOCATION_LONGITUDE_KEY, String.valueOf(currentLocation.getLongitude()));
                         setResult(RESULT_OK, resultIntent);
@@ -90,3 +108,6 @@ public class GetLocationDetails extends AppCompatActivity {
     }
 
 }
+
+
+

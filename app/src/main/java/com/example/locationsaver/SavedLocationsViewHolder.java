@@ -1,5 +1,6 @@
 package com.example.locationsaver;
 
+import android.content.Intent;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,14 +20,20 @@ public class SavedLocationsViewHolder
     private final TextView latLong;
     private final SavedLocationsOnClickListener onClickListener;
     private SavedLocationsViewModel savedLocationsViewModel;
+    ActivityResultLauncher<Intent> arlEditLocationDetail;
+    private final String SELECTION_POSITION = "LOCATION_ID_KEY";
+    private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
+
     public SavedLocationsViewHolder(
             @NonNull View itemView,
             SavedLocationsOnClickListener onClickListener,
-            SavedLocationsViewModel savedLocationsViewModel) {
+            SavedLocationsViewModel savedLocationsViewModel,
+            ActivityResultLauncher<Intent> arlEditLocationDetail) {
         super(itemView);
         latLong = itemView.findViewById(R.id.tvLocationName);
         this.onClickListener = onClickListener;
         this.savedLocationsViewModel = savedLocationsViewModel;
+        this.arlEditLocationDetail = arlEditLocationDetail;
 
         itemView.setOnClickListener(this);
         itemView.setOnCreateContextMenuListener(this);
@@ -37,11 +45,17 @@ public class SavedLocationsViewHolder
 
     static SavedLocationsViewHolder create(
             ViewGroup parent, SavedLocationsOnClickListener onClickListener,
-            SavedLocationsViewModel savedLocationsViewModel
+            SavedLocationsViewModel savedLocationsViewModel,
+            ActivityResultLauncher<Intent> arlEditLocationDetail
             ) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.rv_items_saved_location, parent, false);
-        return new SavedLocationsViewHolder(view, onClickListener, savedLocationsViewModel);
+        return new SavedLocationsViewHolder(
+                view,
+                onClickListener,
+                savedLocationsViewModel,
+                arlEditLocationDetail
+        );
     }
 
     @Override
@@ -57,19 +71,26 @@ public class SavedLocationsViewHolder
                 savedLocationsViewModel.getAllSavedLocations().getValue().get(getAdapterPosition());
         switch (item.getItemId()) {
             case CONTEXT_MENU_EDIT:
+                Intent intentGetLocationDetails = new Intent(
+                        itemView.getContext(),
+                        EditLocationDetailsActivity.class
+                );
+                intentGetLocationDetails.putExtra(SELECTION_POSITION, getAdapterPosition());
+                intentGetLocationDetails.putExtra(LOCATION_NAME_KEY, location.locationName);
+                arlEditLocationDetail.launch(intentGetLocationDetails);
                 Toast.makeText(
                         itemView.getContext(),
-                        "Edit " + getAdapterPosition(),
+                        "Saved " + location.locationName,
                         Toast.LENGTH_SHORT
                 ).show();
                 return true;
             case CONTEXT_MENU_DELETE:
+                savedLocationsViewModel.deleteSelectedLocation(location);
                 Toast.makeText(
                         itemView.getContext(),
                         "Deleted " + location.locationName,
                         Toast.LENGTH_SHORT
                 ).show();
-                savedLocationsViewModel.deleteSelectedLocation(location);
                 return true;
         }
         return false;

@@ -1,8 +1,10 @@
 package com.example.locationsaver;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.AsyncDifferConfig;
 import androidx.recyclerview.widget.DiffUtil;
@@ -12,20 +14,28 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
 
     SavedLocationsOnClickListener onClickListener;
     SavedLocationsViewModel savedLocationsViewModel;
+    ActivityResultLauncher<Intent> arlEditLocationDetail;
     protected SavedLocationsAdapter(
             @NonNull DiffUtil.ItemCallback<SavedLocations> diffCallback,
             SavedLocationsOnClickListener onClickListener,
-            SavedLocationsViewModel savedLocationsViewModel
+            SavedLocationsViewModel savedLocationsViewModel,
+            ActivityResultLauncher<Intent> arlEditLocationDetail
     ) {
         super(diffCallback);
         this.onClickListener = onClickListener;
         this.savedLocationsViewModel = savedLocationsViewModel;
+        this.arlEditLocationDetail = arlEditLocationDetail;
     }
 
     @NonNull
     @Override
     public SavedLocationsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return SavedLocationsViewHolder.create(parent, this.onClickListener, this.savedLocationsViewModel);
+        return SavedLocationsViewHolder.create(
+                parent,
+                this.onClickListener,
+                this.savedLocationsViewModel,
+                this.arlEditLocationDetail
+        );
     }
 
     @Override
@@ -42,7 +52,7 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
 
         @Override
         public boolean areContentsTheSame(@NonNull SavedLocations oldItem, @NonNull SavedLocations newItem) {
-            return oldItem.id == newItem.id;
+            return oldItem.id == newItem.id && oldItem.locationName.equals(newItem.locationName);
         }
     }
 

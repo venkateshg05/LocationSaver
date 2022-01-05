@@ -29,6 +29,14 @@ class SavedLocationsRepository {
         );
     }
 
+    void updateLocation(SavedLocations location) {
+        SavedLocationsDB.databaseWriteExecutor.execute(
+                () -> {
+                    savedLocationsDAO.updateLocation(location);
+                }
+        );
+    }
+
     void deleteSelectedLocation(SavedLocations location) {
         SavedLocationsDB.databaseWriteExecutor.execute(
                 () -> {
