@@ -23,4 +23,5 @@
         android:padding="2dp"
         android:text="TextView"
         android:textSize="18sp" />
+
 </LinearLayout>

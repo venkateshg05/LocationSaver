@@ -6,19 +6,26 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Dao
 public interface SavedLocationsDAO {
-    @Query("SELECT * FROM saved_locations")
-    LiveData<List<SavedLocations>> getAll();
-
     @Insert()
-    public void insertLocations(SavedLocations... locations);
+    void insertLocations(SavedLocations... location);
+
+    @Query("SELECT * FROM saved_locations")
+    LiveData<List<SavedLocations>> getAllLocations();
+
+    @Update
+    void updateLocation(SavedLocations... location);
 
     @Delete
-    public void deleteLocations(SavedLocations... locations);
+    void deleteLocation(SavedLocations... location);
+
+    @Delete
+    void deleteLocations(SavedLocations... locations);
 
 }
