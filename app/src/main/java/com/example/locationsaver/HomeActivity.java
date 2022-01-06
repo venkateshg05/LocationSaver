@@ -34,18 +34,45 @@ public class HomeActivity extends AppCompatActivity {
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
     private final String LOCATION_LATITUDE_KEY = "LOCATION_LATITUDE_KEY";
     private final String LOCATION_LONGITUDE_KEY = "LOCATION_LONGITUDE_KEY";
+    private final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
 
     ActivityResultLauncher<Intent> arlGetLocationDetail = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> addNewLocation(result)
     );
+    private void addNewLocation(ActivityResult result) {
+
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent locationDetails = result.getData();
+            String locationName = locationDetails.getStringExtra(LOCATION_NAME_KEY);
+            String locationLatitude = locationDetails.getStringExtra(LOCATION_LATITUDE_KEY);
+            String locationLongitude = locationDetails.getStringExtra(LOCATION_LONGITUDE_KEY);
+            String locationPhotoURI = locationDetails.getStringExtra(PHOTO_URI_KEY);
+            Log.i("addNewLoc", locationPhotoURI);
+            SavedLocations newLocation = new SavedLocations(
+                    locationLatitude, locationLongitude, locationName
+            );
+            savedLocationsViewModel.addNewSavedLocation(newLocation);
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Location saved",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+        else if (result.getResultCode() == Activity.RESULT_CANCELED) {
+            Toast.makeText(
+                    HomeActivity.this,
+                    "Cancelled",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+    }
 
     private final String SELECTION_POSITION = "LOCATION_ID_KEY";
     ActivityResultLauncher<Intent> arlEditLocationDetail = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> editLocation(result)
     );
-
     private void editLocation(ActivityResult result) {
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent locationDetails = result.getData();
@@ -62,32 +89,6 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(
                     getApplicationContext(),
                     "Changes saved",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
-        else if (result.getResultCode() == Activity.RESULT_CANCELED) {
-            Toast.makeText(
-                    HomeActivity.this,
-                    "Cancelled",
-                    Toast.LENGTH_SHORT
-            ).show();
-        }
-    }
-
-    private void addNewLocation(ActivityResult result) {
-
-        if (result.getResultCode() == Activity.RESULT_OK) {
-            Intent locationDetails = result.getData();
-            String locationName = locationDetails.getStringExtra(LOCATION_NAME_KEY);
-            String locationLatitude = locationDetails.getStringExtra(LOCATION_LATITUDE_KEY);
-            String locationLongitude = locationDetails.getStringExtra(LOCATION_LONGITUDE_KEY);
-            SavedLocations newLocation = new SavedLocations(
-                    locationLatitude, locationLongitude, locationName
-            );
-            savedLocationsViewModel.addNewSavedLocation(newLocation);
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Location saved",
                     Toast.LENGTH_SHORT
             ).show();
         }
