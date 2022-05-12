@@ -1,11 +1,13 @@
 package com.example.locationsaver;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,11 +15,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 public class SavedLocationsViewHolder
         extends RecyclerView.ViewHolder
         implements View.OnClickListener, View.OnCreateContextMenuListener {
 
-    private final TextView latLong;
+    private final TextView locationName;
+    private final ImageView locationThumbNail;
     private final SavedLocationsOnClickListener onClickListener;
     private SavedLocationsViewModel savedLocationsViewModel;
     ActivityResultLauncher<Intent> arlEditLocationDetail;
@@ -30,7 +35,8 @@ public class SavedLocationsViewHolder
             SavedLocationsViewModel savedLocationsViewModel,
             ActivityResultLauncher<Intent> arlEditLocationDetail) {
         super(itemView);
-        latLong = itemView.findViewById(R.id.tvLocationName);
+        locationName = itemView.findViewById(R.id.tvLocationName);
+        locationThumbNail = itemView.findViewById(R.id.ivThumbNail);
         this.onClickListener = onClickListener;
         this.savedLocationsViewModel = savedLocationsViewModel;
         this.arlEditLocationDetail = arlEditLocationDetail;
@@ -39,8 +45,18 @@ public class SavedLocationsViewHolder
         itemView.setOnCreateContextMenuListener(this);
     }
 
-    public void bind(String location) {
-        this.latLong.setText(location);
+    public void bind(String location, String thumbnailURI) {
+        this.locationName.setText(location);
+        Log.i("onBind", ": " + thumbnailURI);
+        if (thumbnailURI.length() > 0) {
+            Picasso
+                    .get()
+                    .load(thumbnailURI)
+                    .fit()
+                    .centerCrop()
+                    .into(this.locationThumbNail)
+            ;
+        }
     }
 
     static SavedLocationsViewHolder create(

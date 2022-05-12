@@ -41,7 +41,7 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     @Override
     public void onBindViewHolder(@NonNull SavedLocationsViewHolder holder, int position) {
         SavedLocations location = getItem(position);
-        holder.bind(location.locationName);
+        holder.bind(location.locationName, location.photoURI);
     }
 
     static class SavedLocationDiff extends DiffUtil.ItemCallback<SavedLocations> {
