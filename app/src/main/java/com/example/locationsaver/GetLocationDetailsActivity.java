@@ -95,12 +95,16 @@ public class GetLocationDetailsActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+                    String photoURIString = "";
+                    if (photoURI != null) {
+                        photoURIString = photoURI.toString();
+                    }
                     Intent resultIntent = new Intent();
                     resultIntent.putExtra(LOCATION_NAME_KEY, etLocationName.getText().toString().trim());
-                        resultIntent.putExtra(LOCATION_LATITUDE_KEY, String.valueOf(currentLocation.getLatitude()));
-                        resultIntent.putExtra(LOCATION_LONGITUDE_KEY, String.valueOf(currentLocation.getLongitude()));
-                        resultIntent.putExtra(PHOTO_URI_KEY, photoURI.toString());
-                        setResult(RESULT_OK, resultIntent);
+                    resultIntent.putExtra(LOCATION_LATITUDE_KEY, String.valueOf(currentLocation.getLatitude()));
+                    resultIntent.putExtra(LOCATION_LONGITUDE_KEY, String.valueOf(currentLocation.getLongitude()));
+                    resultIntent.putExtra(PHOTO_URI_KEY, photoURIString);
+                    setResult(RESULT_OK, resultIntent);
                     finish();
                 });
 
@@ -191,9 +195,10 @@ public class GetLocationDetailsActivity extends AppCompatActivity {
                 ) == PackageManager.PERMISSION_GRANTED
         ) {
             fusedLocationProviderClient.getCurrentLocation(
-                    LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, cts.getToken()
+                    LocationRequest.PRIORITY_HIGH_ACCURACY, cts.getToken()
             ).addOnSuccessListener(this, location -> {
                 // Got current location. In some rare situations this can be null.
+                Log.i("saveLocation", "got location");
                 currentLocation = location;
                 Log.i("saveLocation", currentLocation.toString());
             });

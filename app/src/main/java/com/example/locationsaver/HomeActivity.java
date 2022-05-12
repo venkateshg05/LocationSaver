@@ -49,15 +49,20 @@ public class HomeActivity extends AppCompatActivity {
             String locationLongitude = locationDetails.getStringExtra(LOCATION_LONGITUDE_KEY);
             String locationPhotoURI = locationDetails.getStringExtra(PHOTO_URI_KEY);
             Log.i("addNewLoc", locationPhotoURI);
-            SavedLocations newLocation = new SavedLocations(
-                    locationLatitude, locationLongitude, locationName
-            );
-            savedLocationsViewModel.addNewSavedLocation(newLocation);
             Toast.makeText(
                     getApplicationContext(),
-                    "Location saved",
+                    "Photo URI: " + locationPhotoURI,
                     Toast.LENGTH_SHORT
             ).show();
+            SavedLocations newLocation = new SavedLocations(
+                    locationLatitude, locationLongitude, locationName, locationPhotoURI
+            );
+            savedLocationsViewModel.addNewSavedLocation(newLocation);
+//            Toast.makeText(
+//                    getApplicationContext(),
+//                    "Location saved",
+//                    Toast.LENGTH_SHORT
+//            ).show();
         }
         else if (result.getResultCode() == Activity.RESULT_CANCELED) {
             Toast.makeText(
@@ -82,7 +87,8 @@ public class HomeActivity extends AppCompatActivity {
             SavedLocations updateLocation = new SavedLocations(
                     selectedLocation.latitude,
                     selectedLocation.longitude,
-                    locationName
+                    locationName,
+                    selectedLocation.photoURI
                     );
             updateLocation.id = selectedLocation.id;
             savedLocationsViewModel.updateLocation(updateLocation);
