@@ -52,4 +52,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata:$rootProject.lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.lifecycleVersion"
 
+    //picasso
+    implementation "com.squareup.picasso:picasso:2.71828"
+
 }

@@ -48,21 +48,21 @@ public class HomeActivity extends AppCompatActivity {
             String locationLatitude = locationDetails.getStringExtra(LOCATION_LATITUDE_KEY);
             String locationLongitude = locationDetails.getStringExtra(LOCATION_LONGITUDE_KEY);
             String locationPhotoURI = locationDetails.getStringExtra(PHOTO_URI_KEY);
-            Log.i("addNewLoc", locationPhotoURI);
-            Toast.makeText(
-                    getApplicationContext(),
-                    "Photo URI: " + locationPhotoURI,
-                    Toast.LENGTH_SHORT
-            ).show();
+            Log.i("addNewLoc", ": " + locationPhotoURI);
+//            Toast.makeText(
+//                    getApplicationContext(),
+//                    "Photo URI: " + locationPhotoURI,
+//                    Toast.LENGTH_SHORT
+//            ).show();
             SavedLocations newLocation = new SavedLocations(
                     locationLatitude, locationLongitude, locationName, locationPhotoURI
             );
             savedLocationsViewModel.addNewSavedLocation(newLocation);
-//            Toast.makeText(
-//                    getApplicationContext(),
-//                    "Location saved",
-//                    Toast.LENGTH_SHORT
-//            ).show();
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Location saved",
+                    Toast.LENGTH_SHORT
+            ).show();
         }
         else if (result.getResultCode() == Activity.RESULT_CANCELED) {
             Toast.makeText(
@@ -149,7 +149,11 @@ public class HomeActivity extends AppCompatActivity {
         new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                 @Override
-                public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                public boolean onMove(
+                        @NonNull RecyclerView recyclerView,
+                        @NonNull RecyclerView.ViewHolder viewHolder,
+                        @NonNull RecyclerView.ViewHolder target
+                ) {
                     return false;
                 }
 
