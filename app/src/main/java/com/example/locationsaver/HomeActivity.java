@@ -2,6 +2,8 @@ package com.example.locationsaver;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -146,6 +148,10 @@ public class HomeActivity extends AppCompatActivity {
         rvSavedLocations.setAdapter(savedLocationsAdapter);
         rvSavedLocations.setLayoutManager(new LinearLayoutManager(this));
 
+//        addSwipeGestures(rvSavedLocations);
+    }
+
+    private void addSwipeGestures(RecyclerView rvSavedLocations) {
         new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                 @Override
@@ -159,12 +165,41 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    SavedLocations locationToDelete = savedLocationsViewModel
+                    new AlertDialog.Builder(HomeActivity.this)
+                        .setTitle("Are you sure you want to delete this?")
+                        .setMessage("This action is not reversible")
+                        .setPositiveButton(
+                                "Delete",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        SavedLocations locationToDelete = savedLocationsViewModel
                                                         .getAllSavedLocations()
                                                         .getValue()
                                                         .get(viewHolder.getAdapterPosition());
-                    savedLocationsViewModel.deleteSelectedLocation(locationToDelete);
-                    Toast.makeText(getApplicationContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                                        savedLocationsViewModel.deleteSelectedLocation(locationToDelete);
+                                        Toast.makeText(
+                                            getApplicationContext(),
+                                            "Deleted " + locationToDelete.locationName,
+                                            Toast.LENGTH_SHORT
+                                        ).show();
+                                    }
+                        })
+                        .setNegativeButton(
+                                "Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(
+                                        getApplicationContext(),
+                                        "Canceled",
+                                        Toast.LENGTH_SHORT
+                                    ).show();
+                                    }
+                                }
+                        )
+                        .show()
+                ;
                 }
             }
         ).attachToRecyclerView(rvSavedLocations);

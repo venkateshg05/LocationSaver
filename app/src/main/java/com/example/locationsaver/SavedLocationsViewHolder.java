@@ -1,5 +1,7 @@
 package com.example.locationsaver;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -101,12 +103,37 @@ public class SavedLocationsViewHolder
                 ).show();
                 return true;
             case CONTEXT_MENU_DELETE:
-                savedLocationsViewModel.deleteSelectedLocation(location);
-                Toast.makeText(
-                        itemView.getContext(),
-                        "Deleted " + location.locationName,
-                        Toast.LENGTH_SHORT
-                ).show();
+                new AlertDialog.Builder(itemView.getContext())
+                        .setTitle("Are you sure you want to delete this?")
+                        .setMessage("This action is not reversible")
+                        .setPositiveButton(
+                                "Delete",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        savedLocationsViewModel.deleteSelectedLocation(location);
+                                        Toast.makeText(
+                                            itemView.getContext(),
+                                            "Deleted " + location.locationName,
+                                            Toast.LENGTH_SHORT
+                                        ).show();
+                                    }
+                        })
+                        .setNegativeButton(
+                                "Cancel",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    Toast.makeText(
+                                        itemView.getContext(),
+                                        "Canceled",
+                                        Toast.LENGTH_SHORT
+                                    ).show();
+                                    }
+                                }
+                        )
+                        .show()
+                ;
                 return true;
         }
         return false;
