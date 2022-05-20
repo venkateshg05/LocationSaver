@@ -52,7 +52,8 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
 
         @Override
         public boolean areContentsTheSame(@NonNull SavedLocations oldItem, @NonNull SavedLocations newItem) {
-            return oldItem.id == newItem.id && oldItem.locationName.equals(newItem.locationName);
+            return oldItem.locationName.equals(newItem.locationName)
+                    && oldItem.photoURI.equals(newItem.photoURI);
         }
     }
 
