@@ -29,6 +29,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class HomeActivity extends AppCompatActivity {
 
     private SavedLocationsViewModel savedLocationsViewModel;
+    private SavedLocationsAdapter savedLocationsAdapter;
 
     private FloatingActionButton fabSaveLocation;
 
@@ -51,11 +52,6 @@ public class HomeActivity extends AppCompatActivity {
             String locationLongitude = locationDetails.getStringExtra(LOCATION_LONGITUDE_KEY);
             String locationPhotoURI = locationDetails.getStringExtra(PHOTO_URI_KEY);
             Log.i("addNewLoc", ": " + locationPhotoURI);
-//            Toast.makeText(
-//                    getApplicationContext(),
-//                    "Photo URI: " + locationPhotoURI,
-//                    Toast.LENGTH_SHORT
-//            ).show();
             SavedLocations newLocation = new SavedLocations(
                     locationLatitude, locationLongitude, locationName, locationPhotoURI
             );
@@ -84,16 +80,18 @@ public class HomeActivity extends AppCompatActivity {
         if (result.getResultCode() == Activity.RESULT_OK) {
             Intent locationDetails = result.getData();
             String locationName = locationDetails.getStringExtra(LOCATION_NAME_KEY);
+            String locationPhotoURI = locationDetails.getStringExtra(PHOTO_URI_KEY);
             int position = locationDetails.getIntExtra(SELECTION_POSITION, -1);
             SavedLocations selectedLocation = savedLocationsViewModel.savedLocations.getValue().get(position);
             SavedLocations updateLocation = new SavedLocations(
                     selectedLocation.latitude,
                     selectedLocation.longitude,
                     locationName,
-                    selectedLocation.photoURI
+                    locationPhotoURI
                     );
             updateLocation.id = selectedLocation.id;
             savedLocationsViewModel.updateLocation(updateLocation);
+            setupRecyclerView(savedLocationsAdapter);
             Toast.makeText(
                     getApplicationContext(),
                     "Changes saved",
@@ -119,7 +117,7 @@ public class HomeActivity extends AppCompatActivity {
         SavedLocationsOnClickListener onClickListener =
                 (view, position) -> setupOnClickListener(view, position);
 
-        SavedLocationsAdapter savedLocationsAdapter =
+        savedLocationsAdapter =
                 new SavedLocationsAdapter(
                         new SavedLocationsAdapter.SavedLocationDiff(),
                         onClickListener,
@@ -144,11 +142,15 @@ public class HomeActivity extends AppCompatActivity {
         fabSaveLocation.setOnClickListener(v -> getLocationDetailsAndSave());
 
         // Saved locations RV
+        setupRecyclerView(savedLocationsAdapter);
+
+//        addSwipeGestures(rvSavedLocations);
+    }
+
+    private void setupRecyclerView(SavedLocationsAdapter savedLocationsAdapter) {
         RecyclerView rvSavedLocations = findViewById(R.id.rvSavedLocations);
         rvSavedLocations.setAdapter(savedLocationsAdapter);
         rvSavedLocations.setLayoutManager(new LinearLayoutManager(this));
-
-//        addSwipeGestures(rvSavedLocations);
     }
 
     private void addSwipeGestures(RecyclerView rvSavedLocations) {
