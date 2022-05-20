@@ -91,7 +91,6 @@ public class HomeActivity extends AppCompatActivity {
                     );
             updateLocation.id = selectedLocation.id;
             savedLocationsViewModel.updateLocation(updateLocation);
-            setupRecyclerView(savedLocationsAdapter);
             Toast.makeText(
                     getApplicationContext(),
                     "Changes saved",
