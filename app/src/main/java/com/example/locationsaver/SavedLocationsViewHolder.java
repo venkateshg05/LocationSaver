@@ -30,6 +30,7 @@ public class SavedLocationsViewHolder
     ActivityResultLauncher<Intent> arlEditLocationDetail;
     private final String SELECTION_POSITION = "LOCATION_ID_KEY";
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
+    private final String LOCATION_IMAGE_KEY = "LOCATION_IMAGE_KEY";
 
     public SavedLocationsViewHolder(
             @NonNull View itemView,
@@ -47,8 +48,8 @@ public class SavedLocationsViewHolder
         itemView.setOnCreateContextMenuListener(this);
     }
 
-    public void bind(String location, String thumbnailURI) {
-        this.locationName.setText(location);
+    public void bind(String locationName, String thumbnailURI) {
+        this.locationName.setText(locationName);
         Log.i("onBind", ": " + thumbnailURI);
         if (thumbnailURI.length() > 0) {
             Picasso
@@ -95,12 +96,8 @@ public class SavedLocationsViewHolder
                 );
                 intentGetLocationDetails.putExtra(SELECTION_POSITION, getAdapterPosition());
                 intentGetLocationDetails.putExtra(LOCATION_NAME_KEY, location.locationName);
+                intentGetLocationDetails.putExtra(LOCATION_IMAGE_KEY, location.photoURI);
                 arlEditLocationDetail.launch(intentGetLocationDetails);
-                Toast.makeText(
-                        itemView.getContext(),
-                        "Saved " + location.locationName,
-                        Toast.LENGTH_SHORT
-                ).show();
                 return true;
             case CONTEXT_MENU_DELETE:
                 new AlertDialog.Builder(itemView.getContext())
