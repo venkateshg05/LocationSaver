@@ -143,14 +143,13 @@ public class HomeActivity extends AppCompatActivity {
 
         // Saved locations RV
         setupRecyclerView(savedLocationsAdapter);
-
-//        addSwipeGestures(rvSavedLocations);
     }
 
     private void setupRecyclerView(SavedLocationsAdapter savedLocationsAdapter) {
         RecyclerView rvSavedLocations = findViewById(R.id.rvSavedLocations);
         rvSavedLocations.setAdapter(savedLocationsAdapter);
         rvSavedLocations.setLayoutManager(new LinearLayoutManager(this));
+        addSwipeGestures(rvSavedLocations);
     }
 
     private void addSwipeGestures(RecyclerView rvSavedLocations) {
@@ -197,11 +196,13 @@ public class HomeActivity extends AppCompatActivity {
                                         "Canceled",
                                         Toast.LENGTH_SHORT
                                     ).show();
+                                    setupRecyclerView(savedLocationsAdapter);
                                     }
                                 }
                         )
                         .show()
                 ;
+
                 }
             }
         ).attachToRecyclerView(rvSavedLocations);
