@@ -1,12 +1,10 @@
 package com.example.locationsaver;
 
 import android.content.Intent;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.AsyncDifferConfig;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
@@ -41,7 +39,7 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     @Override
     public void onBindViewHolder(@NonNull SavedLocationsViewHolder holder, int position) {
         SavedLocations location = getItem(position);
-        holder.bind(location.locationName, location.photoURI);
+        holder.bind(location);
     }
 
     static class SavedLocationDiff extends DiffUtil.ItemCallback<SavedLocations> {

@@ -113,13 +113,13 @@ public class HomeActivity extends AppCompatActivity {
 
         savedLocationsViewModel = new ViewModelProvider(this).get(SavedLocationsViewModel.class);
 
-        SavedLocationsOnClickListener onClickListener =
-                (view, position) -> setupOnClickListener(view, position);
+        SavedLocationsOnClickListener oclLaunchMaps =
+                (view, position) -> setupLaunchMaps(view, position);
 
         savedLocationsAdapter =
                 new SavedLocationsAdapter(
                         new SavedLocationsAdapter.SavedLocationDiff(),
-                        onClickListener,
+                        oclLaunchMaps,
                         savedLocationsViewModel,
                         arlEditLocationDetail
                 );
@@ -207,20 +207,20 @@ public class HomeActivity extends AppCompatActivity {
         ).attachToRecyclerView(rvSavedLocations);
     }
 
-    private void setupOnClickListener(View view, int position) {
+    private void setupLaunchMaps(View view, int position) {
         SavedLocations selectedLocation = savedLocationsViewModel.savedLocations.getValue().get(position);
-            String lat_long = selectedLocation.latitude + "," + selectedLocation.longitude +
-                    "(" + selectedLocation.locationName + ")";
+        String lat_long = selectedLocation.latitude + "," + selectedLocation.longitude +
+                "(" + selectedLocation.locationName + ")";
 
-            Intent mapIntent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(mapsURIBase + lat_long)
-                    );
-            mapIntent.setPackage("com.google.android.apps.maps");
+        Intent mapIntent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse(mapsURIBase + lat_long)
+                );
+        mapIntent.setPackage("com.google.android.apps.maps");
 
-            if (mapIntent.resolveActivity(getPackageManager()) != null) {
-              startActivity(mapIntent);
-            }
+        if (mapIntent.resolveActivity(getPackageManager()) != null) {
+          startActivity(mapIntent);
+        }
     }
 
     private void getLocationDetailsAndSave() {

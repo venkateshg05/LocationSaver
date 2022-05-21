@@ -39,7 +39,6 @@ public class EditLocationDetailsActivity extends AppCompatActivity {
     private boolean havePhoto = false;
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
     private final String SELECTION_POSITION = "LOCATION_ID_KEY";
-    private final String LOCATION_IMAGE_KEY = "LOCATION_IMAGE_KEY";
     private final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
 
     @Override
@@ -55,7 +54,7 @@ public class EditLocationDetailsActivity extends AppCompatActivity {
         etLocationName.setText(intentData.getString(LOCATION_NAME_KEY));
 
         ivThumbNail = findViewById(R.id.ivThumbNail);
-        String thumbnailURI = intentData.getString(LOCATION_IMAGE_KEY);
+        String thumbnailURI = intentData.getString(PHOTO_URI_KEY);
         if (thumbnailURI.length() > 0) {
             Picasso
                     .get()
@@ -82,7 +81,7 @@ public class EditLocationDetailsActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                    String photoURIString = "";
+                    String photoURIString = thumbnailURI;
                     if (photoURI != null) {
                         photoURIString = photoURI.toString();
                     }
