@@ -52,4 +52,8 @@ class SavedLocationsRepository {
     public LiveData<List<SavedLocations>> getAllSavedLocationsSortedDesc() {
         return savedLocationsDAO.getAllLocationsSortedDesc();
     }
+
+    public LiveData<List<SavedLocations>> getFilteredSavedLocations(String searchTerm) {
+        return savedLocationsDAO.getFilteredSavedLocations(searchTerm);
+    }
 }

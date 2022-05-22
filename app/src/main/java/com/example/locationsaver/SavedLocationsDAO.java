@@ -33,4 +33,7 @@ public interface SavedLocationsDAO {
 
     @Query("SELECT * FROM saved_locations ORDER BY locationName DESC")
     LiveData<List<SavedLocations>> getAllLocationsSortedDesc();
+
+    @Query("SELECT * FROM saved_locations WHERE locationName LIKE :searchTerm ORDER BY locationName ASC")
+    LiveData<List<SavedLocations>> getFilteredSavedLocations(String searchTerm);
 }

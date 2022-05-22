@@ -59,8 +59,8 @@ public class EditLocationDetailsActivity extends AppCompatActivity {
             Picasso
                     .get()
                     .load(thumbnailURI)
-                    .fit()
-                    .centerCrop()
+                    .resize(0,75)
+                    .centerInside()
                     .into(this.ivThumbNail)
             ;
         }
