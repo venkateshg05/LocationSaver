@@ -61,8 +61,8 @@ public class SavedLocationsViewHolder
             Picasso
                     .get()
                     .load(location.photoURI)
-                    .fit()
-                    .centerCrop()
+                    .resize(0,75)
+                    .centerInside()
                     .into(this.locationThumbNail)
             ;
         }

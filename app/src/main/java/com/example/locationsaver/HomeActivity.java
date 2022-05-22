@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
@@ -118,7 +119,8 @@ public class HomeActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
-        savedLocationsViewModel = new ViewModelProvider(this).get(SavedLocationsViewModel.class);
+        savedLocationsViewModel = new ViewModelProvider(this)
+                                    .get(SavedLocationsViewModel.class);
 
         SavedLocationsOnClickListener oclLaunchMaps =
                 (view, position) -> setupLaunchMaps(view, position);
@@ -133,16 +135,49 @@ public class HomeActivity extends AppCompatActivity {
 
         setupHomePage(savedLocationsAdapter);
 
-        savedLocationsViewModel.getAllSavedLocations().observe(this, locations -> {
-            savedLocationsAdapter.submitList(locations);
-        });
-
+        savedLocationsViewModel.getAllSavedLocationsSortedAsc()
+                .observe(this, locations -> {
+                    savedLocationsAdapter.submitList(locations);
+                    }
+                );
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.tool_bar, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        configSearchView(searchView);
         return true;
+    }
+
+    private void configSearchView(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            private void searchQuery(String query) {
+                if (query.length() > 0) {
+                    SearchLocations(query);
+                }
+                else if (asc){
+                    SortLocationsAlphanumericallyAsc();
+                }
+                else {
+                    SortLocationsAlphanumericallyDesc();
+                }
+            }
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchQuery(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                searchQuery(newText);
+                return true;
+            }
+        });
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -156,6 +191,16 @@ public class HomeActivity extends AppCompatActivity {
         return false;
     }
 
+    public void SearchLocations(String searchTerm) {
+        searchTerm = "%" + searchTerm + "%";
+        savedLocationsViewModel.getFilteredSavedLocations(searchTerm).observe(
+                this,
+                    locations -> {
+                        savedLocationsAdapter.submitList(locations);
+                    }
+        );
+    }
+
     private void SortLocationsAlphanumericallyAsc() {
         savedLocationsViewModel.getAllSavedLocationsSortedAsc().observe(
                     this,
@@ -163,6 +208,7 @@ public class HomeActivity extends AppCompatActivity {
                         savedLocationsAdapter.submitList(locations);
                     }
             );
+        asc = true;
     }
 
     private void SortLocationsAlphanumericallyDesc() {
@@ -172,6 +218,7 @@ public class HomeActivity extends AppCompatActivity {
                         savedLocationsAdapter.submitList(locations);
                     }
             );
+        asc = false;
     }
 
     private void setupHomePage(SavedLocationsAdapter savedLocationsAdapter) {

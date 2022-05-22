@@ -45,4 +45,8 @@ public class SavedLocationsViewModel extends AndroidViewModel {
     public void updateLocation(SavedLocations location) {
         savedLocationsRepository.updateLocation(location);
     }
+
+    public LiveData<List<SavedLocations>> getFilteredSavedLocations(String searchTerm) {
+        return savedLocationsRepository.getFilteredSavedLocations(searchTerm);
+    }
 }
