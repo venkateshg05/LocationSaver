@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/sort_items"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="sort"
+        android:tooltipText="Sort"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/sort_items_atoz"
+                android:title="A -> Z"/>
+            <item
+                android:id="@+id/sort_items_ztoa"
+                android:title="Z -> A"/>
+        </menu>
+    </item>
+
+</menu>

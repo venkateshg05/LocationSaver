@@ -19,12 +19,19 @@ public class SavedLocationsViewModel extends AndroidViewModel {
     public SavedLocationsViewModel(@NonNull Application application) {
         super(application);
         savedLocationsRepository = new SavedLocationsRepository(application);
-//        savedLocations.postValue(savedLocationsRepository.getAllSavedLocations().getValue());
         savedLocations = savedLocationsRepository.getAllSavedLocations();
     }
 
     public LiveData<List<SavedLocations>> getAllSavedLocations() {
         return savedLocations;
+    }
+
+    public LiveData<List<SavedLocations>> getAllSavedLocationsSortedAsc() {
+        return savedLocationsRepository.getAllSavedLocationsSortedAsc();
+    }
+
+    public LiveData<List<SavedLocations>> getAllSavedLocationsSortedDesc() {
+        return savedLocationsRepository.getAllSavedLocationsSortedDesc();
     }
 
     public void addNewSavedLocation(SavedLocations location) {
@@ -38,5 +45,4 @@ public class SavedLocationsViewModel extends AndroidViewModel {
     public void updateLocation(SavedLocations location) {
         savedLocationsRepository.updateLocation(location);
     }
-
 }

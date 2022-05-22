@@ -9,6 +9,9 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -26,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.List;
+
 public class HomeActivity extends AppCompatActivity {
 
     private SavedLocationsViewModel savedLocationsViewModel;
@@ -38,6 +43,8 @@ public class HomeActivity extends AppCompatActivity {
     private final String LOCATION_LATITUDE_KEY = "LOCATION_LATITUDE_KEY";
     private final String LOCATION_LONGITUDE_KEY = "LOCATION_LONGITUDE_KEY";
     private final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
+
+    private boolean asc = true;
 
     ActivityResultLauncher<Intent> arlGetLocationDetail = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -132,9 +139,45 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.tool_bar, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getTitle().equals("A -> Z")) {
+            SortLocationsAlphanumericallyAsc();
+            return true;
+        } else if (item.getTitle().equals("Z -> A")) {
+            SortLocationsAlphanumericallyDesc();
+            return true;
+        }
+        return false;
+    }
+
+    private void SortLocationsAlphanumericallyAsc() {
+        savedLocationsViewModel.getAllSavedLocationsSortedAsc().observe(
+                    this,
+                    locations -> {
+                        savedLocationsAdapter.submitList(locations);
+                    }
+            );
+    }
+
+    private void SortLocationsAlphanumericallyDesc() {
+        savedLocationsViewModel.getAllSavedLocationsSortedDesc().observe(
+                    this,
+                    locations -> {
+                        savedLocationsAdapter.submitList(locations);
+                    }
+            );
+    }
+
     private void setupHomePage(SavedLocationsAdapter savedLocationsAdapter) {
         // Set the home page layout
         setContentView(R.layout.home_screen);
+        setSupportActionBar(findViewById(R.id.toolBar));
 
         // Get the save location button
         fabSaveLocation = findViewById(R.id.fabSaveMyLocation);
@@ -165,7 +208,15 @@ public class HomeActivity extends AppCompatActivity {
 
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    new AlertDialog.Builder(HomeActivity.this)
+                    showDeletionAlertBox(viewHolder);
+
+                }
+            }
+        ).attachToRecyclerView(rvSavedLocations);
+    }
+
+    private AlertDialog showDeletionAlertBox(RecyclerView.ViewHolder viewHolder) {
+        return new AlertDialog.Builder(HomeActivity.this)
                         .setTitle("Are you sure you want to delete this?")
                         .setMessage("This action is not reversible")
                         .setPositiveButton(
@@ -173,16 +224,7 @@ public class HomeActivity extends AppCompatActivity {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        SavedLocations locationToDelete = savedLocationsViewModel
-                                                        .getAllSavedLocations()
-                                                        .getValue()
-                                                        .get(viewHolder.getAdapterPosition());
-                                        savedLocationsViewModel.deleteSelectedLocation(locationToDelete);
-                                        Toast.makeText(
-                                            getApplicationContext(),
-                                            "Deleted " + locationToDelete.locationName,
-                                            Toast.LENGTH_SHORT
-                                        ).show();
+                                        deleteSwipedLocation(viewHolder);
                                     }
                         })
                         .setNegativeButton(
@@ -195,16 +237,25 @@ public class HomeActivity extends AppCompatActivity {
                                         "Canceled",
                                         Toast.LENGTH_SHORT
                                     ).show();
-                                    setupRecyclerView(savedLocationsAdapter);
+                                    savedLocationsAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
                                     }
                                 }
                         )
                         .show()
                 ;
+    }
 
-                }
-            }
-        ).attachToRecyclerView(rvSavedLocations);
+    private void deleteSwipedLocation(RecyclerView.ViewHolder viewHolder) {
+        SavedLocations locationToDelete = savedLocationsViewModel
+                                            .getAllSavedLocations()
+                                            .getValue()
+                                            .get(viewHolder.getAdapterPosition());
+        savedLocationsViewModel.deleteSelectedLocation(locationToDelete);
+        Toast.makeText(
+            getApplicationContext(),
+            "Deleted " + locationToDelete.locationName,
+            Toast.LENGTH_SHORT
+        ).show();
     }
 
     private void setupLaunchMaps(View view, int position) {

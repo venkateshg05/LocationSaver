@@ -45,4 +45,11 @@ class SavedLocationsRepository {
         );
     }
 
+    public LiveData<List<SavedLocations>> getAllSavedLocationsSortedAsc() {
+        return savedLocationsDAO.getAllLocationsSortedAsc();
+    }
+
+    public LiveData<List<SavedLocations>> getAllSavedLocationsSortedDesc() {
+        return savedLocationsDAO.getAllLocationsSortedDesc();
+    }
 }

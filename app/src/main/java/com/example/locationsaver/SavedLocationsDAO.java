@@ -28,4 +28,9 @@ public interface SavedLocationsDAO {
     @Delete
     void deleteLocations(SavedLocations... locations);
 
+    @Query("SELECT * FROM saved_locations ORDER BY locationName")
+    LiveData<List<SavedLocations>> getAllLocationsSortedAsc();
+
+    @Query("SELECT * FROM saved_locations ORDER BY locationName DESC")
+    LiveData<List<SavedLocations>> getAllLocationsSortedDesc();
 }
