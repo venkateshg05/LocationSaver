@@ -39,7 +39,7 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     @Override
     public void onBindViewHolder(@NonNull SavedLocationsViewHolder holder, int position) {
         SavedLocations location = getItem(position);
-        holder.bind(location);
+        holder.bind(location, position);
     }
 
     static class SavedLocationDiff extends DiffUtil.ItemCallback<SavedLocations> {

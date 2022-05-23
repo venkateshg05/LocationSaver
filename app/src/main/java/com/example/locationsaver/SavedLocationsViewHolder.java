@@ -53,7 +53,7 @@ public class SavedLocationsViewHolder
         ibOpenMaps.setOnClickListener(this);
     }
 
-    public void bind(SavedLocations location) {
+    public void bind(SavedLocations location, int position) {
 
         this.locationName.setText(location.locationName);
 
@@ -67,18 +67,18 @@ public class SavedLocationsViewHolder
             ;
         }
 
-        this.ibEdit.setOnClickListener(v -> launchEditActivity(location));
+        this.ibEdit.setOnClickListener(v -> launchEditActivity(location, position));
         this.ibDelete.setOnClickListener(v -> deleteLocation(location));
 
     }
 
 
-    private void launchEditActivity(SavedLocations location) {
+    private void launchEditActivity(SavedLocations location, int position) {
         Intent intentGetLocationDetails = new Intent(
                 itemView.getContext(),
                 EditLocationDetailsActivity.class
         );
-        intentGetLocationDetails.putExtra(SELECTION_POSITION, getAdapterPosition());
+        intentGetLocationDetails.putExtra(SELECTION_POSITION, position);
         intentGetLocationDetails.putExtra(LOCATION_NAME_KEY, location.locationName);
         intentGetLocationDetails.putExtra(PHOTO_URI_KEY, location.photoURI);
         arlEditLocationDetail.launch(intentGetLocationDetails);
