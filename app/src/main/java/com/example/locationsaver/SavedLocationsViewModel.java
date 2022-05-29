@@ -42,6 +42,10 @@ public class SavedLocationsViewModel extends AndroidViewModel {
         savedLocationsRepository.deleteSelectedLocation(location);
     }
 
+    public void deleteSelectedLocations(ArrayList<SavedLocations> locations) {
+        savedLocationsRepository.deleteSelectedLocations(locations);
+    }
+
     public void updateLocation(SavedLocations location) {
         savedLocationsRepository.updateLocation(location);
     }

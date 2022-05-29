@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:orientation="horizontal"
-    android:padding="5dp">
+    android:padding="5dp"
+    android:id="@+id/linearLayout">
 
     <ImageView
         android:id="@+id/ivThumbNail"
@@ -12,7 +13,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:padding="5dp"
-        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+        app:srcCompat="@mipmap/location_pin" />
 
     <TextView
         android:id="@+id/tvLocationName"
