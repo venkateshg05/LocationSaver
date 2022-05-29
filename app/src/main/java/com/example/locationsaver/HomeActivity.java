@@ -30,12 +30,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.List;
-
 public class HomeActivity extends AppCompatActivity {
 
     private SavedLocationsViewModel savedLocationsViewModel;
     private SavedLocationsAdapter savedLocationsAdapter;
+    private Menu mainMenu;
 
     private FloatingActionButton fabSaveLocation;
 
@@ -143,26 +142,34 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
+        mainMenu = menu;
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.tool_bar, menu);
 
+        showDeleteButton(false);
+
         SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
-        configSearchView(searchView);
+        setupSearchView(searchView);
         return true;
     }
 
-    private void configSearchView(SearchView searchView) {
+    private void showDeleteButton(boolean show) {
+        mainMenu.findItem(R.id.delete).setVisible(show);
+    }
+
+    private void setupSearchView(SearchView searchView) {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             private void searchQuery(String query) {
                 if (query.length() > 0) {
-                    SearchLocations(query);
+                    searchLocations(query);
                 }
                 else if (asc){
-                    SortLocationsAlphanumericallyAsc();
+                    sortLocationsAlphanumericallyAsc();
                 }
                 else {
-                    SortLocationsAlphanumericallyDesc();
+                    sortLocationsAlphanumericallyDesc();
                 }
             }
 
@@ -182,16 +189,39 @@ public class HomeActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getTitle().equals("A -> Z")) {
-            SortLocationsAlphanumericallyAsc();
+            sortLocationsAlphanumericallyAsc();
             return true;
         } else if (item.getTitle().equals("Z -> A")) {
-            SortLocationsAlphanumericallyDesc();
+            sortLocationsAlphanumericallyDesc();
             return true;
+        } else if (item.getTitle().equals("Delete")) {
+            deleteSelectedLocations();
         }
         return false;
     }
 
-    public void SearchLocations(String searchTerm) {
+    private void deleteSelectedLocations() {
+        new AlertDialog.Builder(HomeActivity.this)
+                .setTitle("Are you sure you want to delete this?")
+                .setMessage("This action is not reversible")
+                .setPositiveButton(
+                        "Delete",
+                        (dialog, which) -> {
+                            savedLocationsAdapter.deleteSelectedLocations();
+                            showDeleteButton(false);
+                        })
+                .setNegativeButton(
+                        "Cancel",
+                        (dialog, which) -> Toast.makeText(
+                                getApplicationContext(),
+                                "Canceled",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                )
+                .show();
+    }
+
+    public void searchLocations(String searchTerm) {
         searchTerm = "%" + searchTerm + "%";
         savedLocationsViewModel.getFilteredSavedLocations(searchTerm).observe(
                 this,
@@ -201,7 +231,7 @@ public class HomeActivity extends AppCompatActivity {
         );
     }
 
-    private void SortLocationsAlphanumericallyAsc() {
+    private void sortLocationsAlphanumericallyAsc() {
         savedLocationsViewModel.getAllSavedLocationsSortedAsc().observe(
                     this,
                     locations -> {
@@ -211,7 +241,7 @@ public class HomeActivity extends AppCompatActivity {
         asc = true;
     }
 
-    private void SortLocationsAlphanumericallyDesc() {
+    private void sortLocationsAlphanumericallyDesc() {
         savedLocationsViewModel.getAllSavedLocationsSortedDesc().observe(
                     this,
                     locations -> {
@@ -256,40 +286,38 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                     showDeletionAlertBox(viewHolder);
-
                 }
             }
         ).attachToRecyclerView(rvSavedLocations);
     }
 
-    private AlertDialog showDeletionAlertBox(RecyclerView.ViewHolder viewHolder) {
-        return new AlertDialog.Builder(HomeActivity.this)
-                        .setTitle("Are you sure you want to delete this?")
-                        .setMessage("This action is not reversible")
-                        .setPositiveButton(
-                                "Delete",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        deleteSwipedLocation(viewHolder);
-                                    }
+    private void showDeletionAlertBox(RecyclerView.ViewHolder viewHolder) {
+        new AlertDialog.Builder(HomeActivity.this)
+                .setTitle("Are you sure you want to delete this?")
+                .setMessage("This action is not reversible")
+                .setPositiveButton(
+                        "Delete",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                deleteSwipedLocation(viewHolder);
+                            }
                         })
-                        .setNegativeButton(
-                                "Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    Toast.makeText(
+                .setNegativeButton(
+                        "Cancel",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                Toast.makeText(
                                         getApplicationContext(),
                                         "Canceled",
                                         Toast.LENGTH_SHORT
-                                    ).show();
-                                    savedLocationsAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
-                                    }
-                                }
-                        )
-                        .show()
-                ;
+                                ).show();
+                                savedLocationsAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
+                            }
+                        }
+                )
+                .show();
     }
 
     private void deleteSwipedLocation(RecyclerView.ViewHolder viewHolder) {
@@ -306,6 +334,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupLaunchMaps(View view, int position) {
+        Log.i("launch maps", "len: "+savedLocationsViewModel.savedLocations.getValue());
         SavedLocations selectedLocation = savedLocationsViewModel.savedLocations.getValue().get(position);
         String lat_long = selectedLocation.latitude + "," + selectedLocation.longitude +
                 "(" + selectedLocation.locationName + ")";

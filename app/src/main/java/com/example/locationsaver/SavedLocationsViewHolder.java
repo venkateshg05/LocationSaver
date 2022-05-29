@@ -3,16 +3,19 @@ package com.example.locationsaver;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -21,13 +24,15 @@ public class SavedLocationsViewHolder
         extends RecyclerView.ViewHolder
         implements View.OnClickListener {
 
-    private final TextView locationName;
-    private final ImageView locationThumbNail;
+    public final TextView locationName;
+    public final ImageView locationThumbNail;
     private final ImageButton ibEdit, ibDelete, ibOpenMaps;
+    public final LinearLayout rvLinearLayout;
 
     private final SavedLocationsOnClickListener onClickListener;
     private SavedLocationsViewModel savedLocationsViewModel;
     ActivityResultLauncher<Intent> arlEditLocationDetail;
+
     private final String SELECTION_POSITION = "LOCATION_ID_KEY";
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
     private final String PHOTO_URI_KEY = "PHOTO_URI_KEY";
@@ -45,6 +50,7 @@ public class SavedLocationsViewHolder
         ibEdit = itemView.findViewById(R.id.ibEdit);
         ibDelete = itemView.findViewById(R.id.ibDelete);
         ibOpenMaps = itemView.findViewById(R.id.ibOpenMaps);
+        rvLinearLayout = itemView.findViewById(R.id.linearLayout);
 
         this.onClickListener = onClickListener;
         this.savedLocationsViewModel = savedLocationsViewModel;
@@ -72,7 +78,6 @@ public class SavedLocationsViewHolder
 
     }
 
-
     private void launchEditActivity(SavedLocations location, int position) {
         Intent intentGetLocationDetails = new Intent(
                 itemView.getContext(),
@@ -90,29 +95,21 @@ public class SavedLocationsViewHolder
                 .setMessage("This action is not reversible")
                 .setPositiveButton(
                         "Delete",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                savedLocationsViewModel.deleteSelectedLocation(location);
-                                Toast.makeText(
-                                    itemView.getContext(),
-                                    "Deleted " + location.locationName,
-                                    Toast.LENGTH_SHORT
-                                ).show();
-                            }
-                })
-                .setNegativeButton(
-                        "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
+                        (dialog, which) -> {
+                            savedLocationsViewModel.deleteSelectedLocation(location);
                             Toast.makeText(
                                 itemView.getContext(),
-                                "Canceled",
+                                "Deleted " + location.locationName,
                                 Toast.LENGTH_SHORT
                             ).show();
-                            }
-                        }
+                        })
+                .setNegativeButton(
+                        "Cancel",
+                        (dialog, which) -> Toast.makeText(
+                            itemView.getContext(),
+                            "Canceled",
+                            Toast.LENGTH_SHORT
+                        ).show()
                 )
                 .show()
         ;

@@ -26,7 +26,7 @@ public interface SavedLocationsDAO {
     void deleteLocation(SavedLocations... location);
 
     @Delete
-    void deleteLocations(SavedLocations... locations);
+    void deleteLocations(ArrayList<SavedLocations> locations);
 
     @Query("SELECT * FROM saved_locations ORDER BY locationName")
     LiveData<List<SavedLocations>> getAllLocationsSortedAsc();

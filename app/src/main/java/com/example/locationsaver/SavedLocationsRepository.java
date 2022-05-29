@@ -4,6 +4,7 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class SavedLocationsRepository {
@@ -55,5 +56,13 @@ class SavedLocationsRepository {
 
     public LiveData<List<SavedLocations>> getFilteredSavedLocations(String searchTerm) {
         return savedLocationsDAO.getFilteredSavedLocations(searchTerm);
+    }
+
+    public void deleteSelectedLocations(ArrayList<SavedLocations> locations) {
+        SavedLocationsDB.databaseWriteExecutor.execute(
+                () -> {
+                    savedLocationsDAO.deleteLocations(locations);
+                }
+        );
     }
 }
