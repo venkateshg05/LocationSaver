@@ -3,19 +3,13 @@ package com.example.locationsaver;
 import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.selection.ItemDetailsLookup;
-import androidx.recyclerview.selection.ItemKeyProvider;
-import androidx.recyclerview.selection.SelectionTracker;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 
@@ -31,12 +25,10 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
 
     protected SavedLocationsAdapter(
             @NonNull DiffUtil.ItemCallback<SavedLocations> diffCallback,
-            SavedLocationsOnClickListener onClickListener,
             SavedLocationsViewModel savedLocationsViewModel,
             ActivityResultLauncher<Intent> arlEditLocationDetail
     ) {
         super(diffCallback);
-        this.onClickListener = onClickListener;
         this.savedLocationsViewModel = savedLocationsViewModel;
         this.arlEditLocationDetail = arlEditLocationDetail;
     }
@@ -46,7 +38,6 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     public SavedLocationsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return SavedLocationsViewHolder.create(
                 parent,
-                this.onClickListener,
                 this.savedLocationsViewModel,
                 this.arlEditLocationDetail
         );
@@ -61,14 +52,15 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     }
 
     private void setupMultiselection(SavedLocationsViewHolder holder, SavedLocations location) {
-        holder.locationName.setOnLongClickListener(v -> {
+        holder.rvLinearLayout.setOnLongClickListener(v -> {
             selectLocation(holder, location);
             return true;
         });
 
-        holder.locationName.setOnClickListener(v -> {
+        holder.rvLinearLayout.setOnClickListener(v -> {
             if (locationsToDelete.contains(location)) {
                 locationsToDelete.remove(location);
+
                 if (location.photoURI.length() > 0) {
                     Picasso
                             .get()
@@ -84,7 +76,11 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
                             .centerInside()
                             .into(holder.locationThumbNail);
                 }
+
                 holder.rvLinearLayout.setBackgroundColor(Color.TRANSPARENT);
+                holder.ibOpenMaps.setVisibility(View.VISIBLE);
+                holder.ibEdit.setVisibility(View.VISIBLE);
+                holder.ibDelete.setVisibility(View.VISIBLE);
 
                 if (locationsToDelete.isEmpty()) {
                     isEnable = false;
@@ -100,6 +96,7 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
         Log.i("selectedLocation", selectedLocation.locationName);
         isEnable = true;
         locationsToDelete.add(selectedLocation);
+
         holder.rvLinearLayout.setBackgroundColor(Color.LTGRAY);
         Picasso
                 .get()
@@ -107,6 +104,9 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
                 .resize(0, 75)
                 .centerInside()
                 .into(holder.locationThumbNail);
+        holder.ibOpenMaps.setVisibility(View.INVISIBLE);
+        holder.ibEdit.setVisibility(View.INVISIBLE);
+        holder.ibDelete.setVisibility(View.INVISIBLE);
 
     }
 

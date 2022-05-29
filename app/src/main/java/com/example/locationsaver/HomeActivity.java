@@ -121,13 +121,9 @@ public class HomeActivity extends AppCompatActivity {
         savedLocationsViewModel = new ViewModelProvider(this)
                                     .get(SavedLocationsViewModel.class);
 
-        SavedLocationsOnClickListener oclLaunchMaps =
-                (view, position) -> setupLaunchMaps(view, position);
-
         savedLocationsAdapter =
                 new SavedLocationsAdapter(
                         new SavedLocationsAdapter.SavedLocationDiff(),
-                        oclLaunchMaps,
                         savedLocationsViewModel,
                         arlEditLocationDetail
                 );
@@ -331,23 +327,6 @@ public class HomeActivity extends AppCompatActivity {
             "Deleted " + locationToDelete.locationName,
             Toast.LENGTH_SHORT
         ).show();
-    }
-
-    private void setupLaunchMaps(View view, int position) {
-        Log.i("launch maps", "len: "+savedLocationsViewModel.savedLocations.getValue());
-        SavedLocations selectedLocation = savedLocationsViewModel.savedLocations.getValue().get(position);
-        String lat_long = selectedLocation.latitude + "," + selectedLocation.longitude +
-                "(" + selectedLocation.locationName + ")";
-
-        Intent mapIntent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse(mapsURIBase + lat_long)
-                );
-        mapIntent.setPackage("com.google.android.apps.maps");
-
-        if (mapIntent.resolveActivity(getPackageManager()) != null) {
-          startActivity(mapIntent);
-        }
     }
 
     private void getLocationDetailsAndSave() {
