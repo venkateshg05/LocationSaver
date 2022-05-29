@@ -267,69 +267,6 @@ public class HomeActivity
         RecyclerView rvSavedLocations = findViewById(R.id.rvSavedLocations);
         rvSavedLocations.setAdapter(savedLocationsAdapter);
         rvSavedLocations.setLayoutManager(new LinearLayoutManager(this));
-        addSwipeGestures(rvSavedLocations);
-    }
-
-    private void addSwipeGestures(RecyclerView rvSavedLocations) {
-        new ItemTouchHelper(
-                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-                @Override
-                public boolean onMove(
-                        @NonNull RecyclerView recyclerView,
-                        @NonNull RecyclerView.ViewHolder viewHolder,
-                        @NonNull RecyclerView.ViewHolder target
-                ) {
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                    showDeletionAlertBox(viewHolder);
-                }
-            }
-        ).attachToRecyclerView(rvSavedLocations);
-    }
-
-    private void showDeletionAlertBox(RecyclerView.ViewHolder viewHolder) {
-        new AlertDialog.Builder(HomeActivity.this)
-                .setTitle("Are you sure you want to delete this?")
-                .setMessage("This action is not reversible")
-                .setPositiveButton(
-                        "Delete",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                deleteSwipedLocation(viewHolder);
-                            }
-                        })
-                .setNegativeButton(
-                        "Cancel",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(
-                                        getApplicationContext(),
-                                        "Canceled",
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                                savedLocationsAdapter.notifyItemChanged(viewHolder.getAdapterPosition());
-                            }
-                        }
-                )
-                .show();
-    }
-
-    private void deleteSwipedLocation(RecyclerView.ViewHolder viewHolder) {
-        SavedLocations locationToDelete = savedLocationsViewModel
-                                            .getAllSavedLocations()
-                                            .getValue()
-                                            .get(viewHolder.getAdapterPosition());
-        savedLocationsViewModel.deleteSelectedLocation(locationToDelete);
-        Toast.makeText(
-            getApplicationContext(),
-            "Deleted " + locationToDelete.locationName,
-            Toast.LENGTH_SHORT
-        ).show();
     }
 
     private void getLocationDetailsAndSave() {
