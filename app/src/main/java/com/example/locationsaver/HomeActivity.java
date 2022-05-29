@@ -6,13 +6,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -30,7 +28,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity
+        extends AppCompatActivity
+        implements MultiSelectDelete
+{
 
     private SavedLocationsViewModel savedLocationsViewModel;
     private SavedLocationsAdapter savedLocationsAdapter;
@@ -38,7 +39,6 @@ public class HomeActivity extends AppCompatActivity {
 
     private FloatingActionButton fabSaveLocation;
 
-    private final String mapsURIBase = "http://maps.google.com/maps?q=loc:";
     private final String LOCATION_NAME_KEY = "LOCATION_NAME_KEY";
     private final String LOCATION_LATITUDE_KEY = "LOCATION_LATITUDE_KEY";
     private final String LOCATION_LONGITUDE_KEY = "LOCATION_LONGITUDE_KEY";
@@ -125,15 +125,16 @@ public class HomeActivity extends AppCompatActivity {
                 new SavedLocationsAdapter(
                         new SavedLocationsAdapter.SavedLocationDiff(),
                         savedLocationsViewModel,
-                        arlEditLocationDetail
+                        arlEditLocationDetail,
+                        this
                 );
 
         setupHomePage(savedLocationsAdapter);
 
         savedLocationsViewModel.getAllSavedLocationsSortedAsc()
-                .observe(this, locations -> {
-                    savedLocationsAdapter.submitList(locations);
-                    }
+                .observe(
+                        this,
+                        locations -> savedLocationsAdapter.submitList(locations)
                 );
     }
 
@@ -150,8 +151,10 @@ public class HomeActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showDeleteButton(boolean show) {
+    public void showDeleteButton(boolean show) {
         mainMenu.findItem(R.id.delete).setVisible(show);
+        mainMenu.findItem(R.id.app_bar_search).setVisible(!show);
+        mainMenu.findItem(R.id.sort_items).setVisible(!show);
     }
 
     private void setupSearchView(SearchView searchView) {

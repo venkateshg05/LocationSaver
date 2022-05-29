@@ -11,13 +11,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLocationsViewHolder> {
 
-    SavedLocationsOnClickListener onClickListener;
+    MultiSelectDelete multiSelectDelete;
     SavedLocationsViewModel savedLocationsViewModel;
     ActivityResultLauncher<Intent> arlEditLocationDetail;
     ArrayList<SavedLocations> locationsToDelete = new ArrayList<>();
@@ -26,11 +27,13 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     protected SavedLocationsAdapter(
             @NonNull DiffUtil.ItemCallback<SavedLocations> diffCallback,
             SavedLocationsViewModel savedLocationsViewModel,
-            ActivityResultLauncher<Intent> arlEditLocationDetail
+            ActivityResultLauncher<Intent> arlEditLocationDetail,
+            MultiSelectDelete multiSelectDelete
     ) {
         super(diffCallback);
         this.savedLocationsViewModel = savedLocationsViewModel;
         this.arlEditLocationDetail = arlEditLocationDetail;
+        this.multiSelectDelete = multiSelectDelete;
     }
 
     @NonNull
@@ -54,6 +57,8 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     private void setupMultiselection(SavedLocationsViewHolder holder, SavedLocations location) {
         holder.rvLinearLayout.setOnLongClickListener(v -> {
             selectLocation(holder, location);
+            isEnable = true;
+            multiSelectDelete.showDeleteButton(true);
             return true;
         });
 
@@ -84,6 +89,7 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
 
                 if (locationsToDelete.isEmpty()) {
                     isEnable = false;
+                    multiSelectDelete.showDeleteButton(false);
                 }
             } else if (isEnable) {
                 selectLocation(holder, location);
@@ -94,7 +100,6 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     private void selectLocation(SavedLocationsViewHolder holder, SavedLocations selectedLocation) {
 
         Log.i("selectedLocation", selectedLocation.locationName);
-        isEnable = true;
         locationsToDelete.add(selectedLocation);
 
         holder.rvLinearLayout.setBackgroundColor(Color.LTGRAY);
@@ -111,6 +116,10 @@ public class SavedLocationsAdapter extends ListAdapter<SavedLocations, SavedLoca
     }
 
     public void deleteSelectedLocations() {
+        for (SavedLocations location : locationsToDelete) {
+            Log.i("locationsToDelete", location.locationName);
+        }
+        savedLocationsViewModel.deleteSelectedLocations(locationsToDelete);
     }
 
     static class SavedLocationDiff extends DiffUtil.ItemCallback<SavedLocations> {
